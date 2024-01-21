@@ -21,12 +21,6 @@ EOF
 
 ### Usage
 
-```shell
-nix develop github:ink-splatters/cpp-shell#<name> --impure
-```
-
-#### Examples
-
 - enter shell
 
 ```shell
@@ -38,7 +32,7 @@ nix develop github:ink-splatters/cpp-shell --impure
 ```shell
 git clone https://github:ink-splatters/cpp-shell.git
 cd cpp-shell
-nix develop .#O3
+nix develop .#O3 --impure
 ```
 
 ### Shell List

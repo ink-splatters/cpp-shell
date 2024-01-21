@@ -1,6 +1,6 @@
-## Dev Shells
+## Cpp Dev Shell
 
-barebone dev shells based on `nix flakes`
+barebone cpp dev shell based on `nix flakes`
 
 production ready and much more feature-rich alternative: https://devenv.sh
 
@@ -22,35 +22,31 @@ EOF
 ### Usage
 
 ```shell
-nix develop github:ink-splatters/dev-shells#<name> --impure
+nix develop github:ink-splatters/cpp-shell#<name> --impure
 ```
 
 #### Examples
 
-- enter `swift` shell (contains `swift` and swift package manager) without cloning the repo:
+- enter shell
 
 ```shell
-nix develop github:ink-splatters/dev-shells#swift --impure
+nix develop github:ink-splatters/cpp-shell --impure
 ```
 
-- enter `cpp` shell, locally:
+- enter shell with -O3 enabled, locally:
 
 ```shell
-git clone https://github:ink-splatters/dev-shells.git
-cd dev-shells
-nix develop .#cpp
+git clone https://github:ink-splatters/cpp-shell.git
+cd cpp-shell
+nix develop .#O3
 ```
 
 ### Shell List
 
-- `cpp`
+- default
 - `cpp-O3`
-- `swift`
-- `swift-O3`
 
 with hardening disabled:
 
-- `cpp-unhardened`
-- `cpp-O3-unhardened`
-- `swift-unhardened`
-- `swift-O3-unhardened`
+- `unhardened`
+- `O3-unhardened`

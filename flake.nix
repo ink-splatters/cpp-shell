@@ -18,9 +18,9 @@
           let
             inherit (pkgs) mkShell llvmPackages_latest;
           in
-            mkShell.override {
-             inherit (llvmPackages_latest) stdenv;
-           };
+          mkShell.override {
+            inherit (llvmPackages_latest) stdenv;
+          };
       in
       {
         formatter = pkgs.nixpkgs-fmt;

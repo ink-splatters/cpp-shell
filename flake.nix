@@ -1,6 +1,7 @@
 {
   description = "basic cpp development shell";
 
+
   outputs = { nixpkgs, flake-utils, self, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
@@ -13,10 +14,10 @@
 
         CFLAGS = "-mcpu native";
         CXXFLAGS = "${CFLAGS} -stdlib=libc++";
-        mkShell =  
+        mkShell =
           let
             inherit (pkgs) mkShell llvmPackages_latest;
-          in 
+          in
             mkShell.override {
              inherit (llvmPackages_latest) stdenv;
            };
@@ -30,7 +31,7 @@
 
           O3 = mkShell {
             inherit shellHook;
-            
+
             CFLAGS = "${CFLAGS} -O3";
             CXXFLAGS = "${CXXFLAGS} -O3";
           };
@@ -41,13 +42,13 @@
 
           O3-unhardened = mkShell {
             inherit shellHook hardeningDisable;
-            
+
             CFLAGS = "${CFLAGS} -O3";
             CXXFLAGS = "${CXXFLAGS} -O3";
           };
         };
 
-        checks.default = stdenv.mkDerivation {
+        checks.default = pkgs.stdenv.mkDerivation {
           inherit (self.devShells.${system}.default) CFLAGS CXXFLAGS;
 
           name = "check";

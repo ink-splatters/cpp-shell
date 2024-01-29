@@ -64,7 +64,7 @@
         };
 
         checks.default = pkgs.stdenv.mkDerivation {
-          inherit (self.devShells.${system}.default) CFLAGS CXXFLAGS;
+          inherit (self.devShells.${system}.default);
 
           name = "check";
           src = ./checks;
@@ -72,7 +72,7 @@
           doCheck = true;
 
           checkPhase = ''
-            clang++ checks/main.cpp -o helloworld
+            clang++ main.cpp -o helloworld
           '';
           installPhase = ''
             mkdir "$out"

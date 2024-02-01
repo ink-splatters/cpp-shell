@@ -24,16 +24,16 @@
             {
 
               inherit CFLAGS CXXFLAGS;
-              nativeBuildInputs = with pkgs;[
+              buildInputs = with pkgs;[
                 cmake
                 ninja
                 gnumake
                 buck2
                 meson
-                xmake
                 flex
                 bison
                 ccls
+		ccache
                 (with llvmPackages_latest; [ llvm lldb clang-tools ])
               ];
 

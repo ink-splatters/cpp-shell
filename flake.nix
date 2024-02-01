@@ -11,7 +11,7 @@
         hardeningDisable = [ "all" ];
 
 
-        CFLAGS = "-mcpu native";
+        CFLAGS = ""; #"-mcpu native";
         CXXFLAGS = "${CFLAGS} -stdlib=libc++";
         mkSh = args:
           let
@@ -31,8 +31,13 @@
                 buck2
                 meson
                 xmake
-                llvmPackages_latest.llvm
+                flex
+                bison
+                ccls
+                (with llvmPackages_latest; [ llvm lldb clang-tools ])
               ];
+
+
 
 
               shellHook = ''

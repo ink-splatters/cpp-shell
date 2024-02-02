@@ -9,22 +9,21 @@
           config.allowUnsupportedSystem = true;
         };
         hardeningDisable = [ "all" ];
+        CFLAGS = "-O3";
+        CXXFLAGS = "${CFLAGS}";
 
-
-        CFLAGS = ""; #"-mcpu native";
-        CXXFLAGS = "${CFLAGS} -stdlib=libc++";
         mkSh = args:
           let
             inherit (pkgs) llvmPackages_latest;
           in
-          pkgs.mkShell.override
+          with pkgs; mkShell.override
             {
               inherit (llvmPackages_latest) stdenv;
             }
             {
 
               inherit CFLAGS CXXFLAGS;
-              buildInputs = with pkgs;[
+              buildInputs = [
                 cmake
                 ninja
                 gnumake
@@ -33,12 +32,9 @@
                 flex
                 bison
                 ccls
-		ccache
+                ccache
                 (with llvmPackages_latest; [ llvm lldb clang-tools ])
               ];
-
-
-
 
               shellHook = ''
                 export PS1="\n\[\033[01;32m\]\u $\[\033[00m\]\[\033[01;36m\] \w >\[\033[00m\] "
@@ -46,14 +42,13 @@
             } // args;
 
       in
-      {
-        formatter = pkgs.nixpkgs-fmt;
+      with pkgs; {
+        formatter = nixpkgs-fmt;
         devShells = {
           default = mkSh { };
 
           O3 = mkSh {
-            CFLAGS = "${CFLAGS} -O3";
-            CXXFLAGS = "${CXXFLAGS} -O3";
+            inherit CFLAGS CXXFLAGS;
           };
 
           unhardened = mkSh {
@@ -61,14 +56,11 @@
           };
 
           O3-unhardened = mkSh {
-            inherit hardeningDisable;
-
-            CFLAGS = "${CFLAGS} -O3";
-            CXXFLAGS = "${CXXFLAGS} -O3";
+            inherit hardeningDisable CFLAGS CXXFLAGS;
           };
         };
 
-        checks.default = pkgs.stdenv.mkDerivation {
+        checks.default = stdenv.mkDerivation {
           inherit (self.devShells.${system}.default);
 
           name = "check";

@@ -20,7 +20,6 @@
               cmake
               ninja
               gnumake
-              buck2
               meson
               flex
               bison

@@ -12,7 +12,7 @@
         CFLAGS = "-fuse-ld=lld";
         CXXFLAGS = "${CFLAGS} -stdlib=libc++";
 
-        mkSh = args: with pkgs; mkShell.override { inherit (llvmPackages_latest) stdenv; }
+        mkSh = args: with pkgs; mkShell
           {
             inherit CFLAGS CXXFLAGS;
 
@@ -25,7 +25,7 @@
               bison
               ccls
               ccache
-              (with llvmPackages_latest; [ llvm lldb clang-tools lld ])
+              (with llvmPackages; [ llvm lldb clang-tools lld libcxx libcxxabi binutils ])
             ];
 
             shellHook = ''

@@ -34,9 +34,9 @@ nix develop github:ink-splatters/cpp-shell
 
 there are 3 more shell types:
 
-- O3 ( adds `-O3` to `CFLAGS` and `CXXFLAGS` )
-- unhardened ( disables hardening using [hardeningDisable](https://nixos.wiki/wiki/C)
-- O3-unhardened ( self explanatory )
+- `#O3` ( adds `-O3` to `CFLAGS` and `CXXFLAGS` )
+- `#unhardened` ( disables hardening using [hardeningDisable](https://nixos.wiki/wiki/C)
+- `#O3-unhardened` ( self explanatory )
 
 all the shells feature:
 - `-mcpu=apple-m1` if applicable

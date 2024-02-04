@@ -63,21 +63,17 @@ nix develop .#O3-unhardened
 optionally, the following  tools can be installed `nix profile` - wise:
 
 - `lldb`
-- `ccls`
-- `clang-format`
-- `clangd`
-
-and more tools included in nix `clang-tools` package
+- `clang-format`, `clangd` and more tools included in nix `clang-tools` package
 
 to install it:
 
 ```
-nix profile install github:ink-splatters/cpp-shell#O3
+nix profile install github:ink-splatters/cpp-shell
 ```
 
 ### Alternatives
 
-More advanced `nix`-based alternatives which support wider tool sets:
+More advanced `nix`-based alternatives which support wider range of tools and options:
 
 [devshell](https://github.com/numtide/devshell)
 [devenv](http://devenv.sh)

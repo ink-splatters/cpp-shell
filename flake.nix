@@ -9,9 +9,11 @@
           # config.allowUnsupportedSystem = true;
         };
 
-        CFLAGS = pkgs.lib.optionalString ("${system}" == "aarch64-darwin") "-mcpu=apple-m1";
+        inherit (pkgs) lib;
+
+        CFLAGS = lib.optionalString ("${system}" == "aarch64-darwin") "-mcpu=apple-m1";
         CXXFLAGS = CFLAGS;
-        LDFLAGS = "-fused-ld=lld";
+        LDFLAGS = "-fuse-ld=lld";
 
         nativeBuildInputs = with pkgs; [
           bison
@@ -25,12 +27,14 @@
           (with llvmPackages; [ lld xcodebuild ])
         ];
 
-        buildInputs = with pkgs; [
-          (with llvmPackages; [ clang-tools lldb ])
-          ccls
+        buildInputs = with pkgs; with llvmPackages; [
+          clang-tools
+          lldb
+          #ccls
         ];
 
-        inherit (pkgs.llvmPackages) stdenv;
+        inherit (pkgs) llvmPackages;
+        inherit (llvmPackages) stdenv;
 
         default = with pkgs; mkShell.override { stdenv = stdenv; } {
           inherit CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs;
@@ -72,10 +76,17 @@
         devShells = {
           inherit default O3 unhardened O3-unhardened;
         };
-        packages.default = pkgs.buildEnv {
-          name = "cpp-env";
 
-          paths = buildInputs;
+        packages.default = pkgs.buildEnv {
+          name = "cpp-tools";
+          paths = buildInputs; #++ [
+          #   ((pkgs.ccls.overrideAttrs (oldAttrs: {
+          #     inherit CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs;
+          #     buildInputs = with pkgs; [ ninja lld ccache ] ++ oldAttrs.buildInputs;
+
+          #   })).override { inherit stdenv llvmPackages; })
+          # ];
+
         };
 
       });

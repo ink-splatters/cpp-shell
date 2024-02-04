@@ -68,7 +68,7 @@ optionally, the following  tools can be installed `nix profile` - wise:
 to install it:
 
 ```
-nix profile install github:ink-splatters/cpp-shell
+nix profile install github:ink-splatters/cpp-shell#cpp-tools
 ```
 
 ### Alternatives

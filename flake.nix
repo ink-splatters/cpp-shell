@@ -77,7 +77,7 @@
           inherit default O3 unhardened O3-unhardened;
         };
 
-        packages.default = pkgs.buildEnv {
+        packages.cpp-tools = pkgs.buildEnv {
           name = "cpp-tools";
           paths = buildInputs; #++ [
           #   ((pkgs.ccls.overrideAttrs (oldAttrs: {

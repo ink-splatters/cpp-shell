@@ -6,80 +6,78 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config.allowUnsupportedSystem = true;
+          # config.allowUnsupportedSystem = true;
         };
 
-        hardeningDisable = [ "all" ];
+        CFLAGS = pkgs.lib.optionalString ("${system}" == "aarch64-darwin") "-mcpu=apple-m1";
+        CXXFLAGS = CFLAGS;
+        LDFLAGS = "-fused-ld=lld";
 
-        mkSh = args: with pkgs; mkShell
-          {
-            LDFLAGS = "-fused-ld=lld";
+        nativeBuildInputs = with pkgs; [
+          cmake
+          ninja
+          gnumake
+          meson
+          flex
+          bison
+          ccache
+          (with llvmPackages; [ lld xcodebuild ])
+        ];
 
-            nativeBuildInputs = [
-              cmake
-              ninja
-              gnumake
-              meson
-              flex
-              bison
-              ccache
-            ];
+        buildInputs = with pkgs.llvmPackages; [
+          clang-tools
+          lldb
+        ];
 
+        inherit (pkgs.llvmPackages) stdenv;
 
-            shellHook = ''
-              export PS1="\n\[\033[01;32m\]\u $\[\033[00m\]\[\033[01;36m\] \w >\[\033[00m\] "
-            '';
-          } // args;
+        default = with pkgs; mkShell.override { stdenv = stdenv; } {
+          inherit CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs;
 
+          shellHook = ''
+            export PS1="\n\[\033[01;32m\]\u $\[\033[00m\]\[\033[01;36m\] \w >\[\033[00m\] "
+          '';
+        };
+
+        unhardened = {
+          hardeningDisable = [ "all" ];
+        } // default;
+
+        O3 = {
+          CFLAGS = "${CFLAGS} -O3";
+          CXXFLAGS = "${CXXFLAGS} -O3";
+        } // default;
+
+        O3-unhardened = O3 // unhardened;
       in
-      with pkgs; {
+      {
 
-        checks.default =
-          let
-            inherit (self.devShells.${system}.default) stdenv nativeBuildInputs LDFLAGS;
-          in
-          stdenv.mkDerivation {
-            name = "check";
-            src = ./checks;
-            dontBuild = true;
-            doCheck = true;
+        checks.default = stdenv.mkDerivation {
+          inherit (self.devShells.${system}.default) nativeBuildInputs CFLAGS CXXFLAGS LDFLAGS;
 
-            checkPhase = ''
-              clang++ main.cpp -o helloworld
-            '';
-            installPhase = ''
-              mkdir "$out"
-            '';
-          };
-        formatter = nixpkgs-fmt;
-        devShells = {
-          default = mkSh { };
+          name = "check";
+          src = ./checks;
+          dontBuild = true;
+          doCheck = true;
 
-          O3 = mkSh {
-            CFLAGS = "-O3";
-            CXXFLAGS = "-O3";
-          };
-
-          unhardened = mkSh {
-            inherit hardeningDisable;
-          };
-
-          O3-unhardened = mkSh {
-            inherit hardeningDisable;
-            CFLAGS = "-O3";
-            CXXFLAGS = "-O3";
-          };
+          checkPhase = ''
+            clang++ main.cpp -o helloworld
+          '';
+          installPhase = ''
+            mkdir "$out"
+          '';
         };
-        packages.default = buildEnv {
+        formatter = pkgs.nixpkgs-fmt;
+        devShells = {
+          inherit default O3 unhardened O3-unhardened;
+        };
+        packages.default = pkgs.buildEnv {
           name = "cpp-env";
 
-          paths = with llvmPackages; [
-            # ccls
-            lldb
-            llvm
-            clang-tools
+          paths = with pkgs; [
+            ccls
             xcodebuild
-          ];
+          ] ++ buildInputs;
         };
 
       });

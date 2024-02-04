@@ -78,7 +78,7 @@
             lldb
             llvm
             clang-tools
-
+            xcodebuild
           ];
         };
 

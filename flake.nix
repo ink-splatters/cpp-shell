@@ -14,19 +14,20 @@
         LDFLAGS = "-fused-ld=lld";
 
         nativeBuildInputs = with pkgs; [
-          cmake
-          ninja
-          gnumake
-          meson
-          flex
           bison
           ccache
+          cmake
+          conan
+          gnumake
+          flex
+          meson
+          ninja
           (with llvmPackages; [ lld xcodebuild ])
         ];
 
-        buildInputs = with pkgs.llvmPackages; [
-          clang-tools
-          lldb
+        buildInputs = with pkgs; [
+          (with llvmPackages; [ clang-tools lldb ])
+          ccls
         ];
 
         inherit (pkgs.llvmPackages) stdenv;
@@ -74,10 +75,7 @@
         packages.default = pkgs.buildEnv {
           name = "cpp-env";
 
-          paths = with pkgs; [
-            ccls
-            xcodebuild
-          ] ++ buildInputs;
+          paths = buildInputs;
         };
 
       });

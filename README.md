@@ -1,6 +1,6 @@
 ## dev-shells / cpp
 
-barebone cpp dev shell based on `nix flakes`
+barebone cpp development shell based on `nix flakes`
 
 ### Requirements
 
@@ -45,7 +45,6 @@ all the shells feature:
 
 ### Examples
 
-
 #### Enter O3 shell
 ```shell
 nix develop github:ink-splatters/cpp-shell#O3
@@ -73,7 +72,7 @@ and more tools included in nix `clang-tools` package
 to install it:
 
 ```
-nix profile install https://github.com/ink-splatters/cpp-shell.git
+nix profile install github:ink-splatters/cpp-shell#O3
 ```
 
 ### Alternatives

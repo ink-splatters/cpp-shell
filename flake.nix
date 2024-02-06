@@ -1,92 +1,44 @@
 {
   description = "basic cpp development shell";
 
-  outputs = { nixpkgs, flake-utils, self, ... }:
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-stable.follows = "nixpkgs";
+    };
+  };
+
+  nixConfig = {
+    extra-substituters = "https://cachix.cachix.org";
+    extra-trusted-public-keys = "cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=";
+  };
+
+  outputs = { nixpkgs, flake-utils, pre-commit-hooks,self, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
           # config.allowUnsupportedSystem = true;
         };
+        inherit (pkgs) callPackage;
 
-        inherit (pkgs) lib;
+        # inherit (llvmPackages)stdenv;
+        common = (callPackage ./nix/common {} );
+        package =  pkg: callPackage { inherit common ; };
+        
+      in with pkgs; {
 
-        CFLAGS = lib.optionalString ("${system}" == "aarch64-darwin") "-mcpu=apple-m1";
-        CXXFLAGS = CFLAGS;
-        LDFLAGS = "-fuse-ld=lld";
+        devShells =  package ./nix/shells {};
+        checks =  package ./nix/checks {};
 
-        nativeBuildInputs = with pkgs; [
-          bison
-          ccache
-          cmake
-          conan
-          gnumake
-          flex
-          meson
-          ninja
-          (with llvmPackages; [ lld xcodebuild ])
-        ];
+        formatter = pkgs.alejandra;
 
-        buildInputs = with pkgs; with llvmPackages; [
-          clang-tools
-          lldb
-          #ccls
-        ];
-
-        inherit (pkgs) llvmPackages;
-        inherit (llvmPackages) stdenv;
-
-        default = with pkgs; mkShell.override { stdenv = stdenv; } {
-          inherit CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs;
-
-          shellHook = ''
-            export PS1="\n\[\033[01;32m\]\u $\[\033[00m\]\[\033[01;36m\] \w >\[\033[00m\] "
-          '';
-        };
-
-        unhardened = {
-          hardeningDisable = [ "all" ];
-        } // default;
-
-        O3 = {
-          CFLAGS = "${CFLAGS} -O3";
-          CXXFLAGS = "${CXXFLAGS} -O3";
-        } // default;
-
-        O3-unhardened = O3 // unhardened;
-      in
-      {
-
-        checks.default = stdenv.mkDerivation {
-          inherit (self.devShells.${system}.default) nativeBuildInputs CFLAGS CXXFLAGS LDFLAGS;
-
-          name = "check";
-          src = ./checks;
-          dontBuild = true;
-          doCheck = true;
-
-          checkPhase = ''
-            clang++ main.cpp -o helloworld
-          '';
-          installPhase = ''
-            mkdir "$out"
-          '';
-        };
-        formatter = pkgs.nixpkgs-fmt;
-        devShells = {
-          inherit default O3 unhardened O3-unhardened;
-        };
-
-        packages.cpp-tools = pkgs.buildEnv {
+        packages.cpp-tools = pkgs.buildEnv {          
           name = "cpp-tools";
-          paths = buildInputs; #++ [
-          #   ((pkgs.ccls.overrideAttrs (oldAttrs: {
-          #     inherit CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs;
-          #     buildInputs = with pkgs; [ ninja lld ccache ] ++ oldAttrs.buildInputs;
-
-          #   })).override { inherit stdenv llvmPackages; })
-          # ];
-
+          
+          paths = buildInputs;
         };
 
       });

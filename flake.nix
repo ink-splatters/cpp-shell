@@ -7,19 +7,20 @@
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs = {
-          nixpkgs.follows = "nixpkgs";
-          nixpkgs-stable.follows = "nixpkgs";
-          flake-utils.follows = "flake-utils";
-        };
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
       };
+    };
   };
 
   nixConfig = {
     extra-substituters = "https://cachix.cachix.org";
-    extra-trusted-public-keys = "cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=";
+    extra-trusted-public-keys =
+      "cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=";
   };
 
-  outputs = { nixpkgs, flake-utils, pre-commit-hooks,self, ... }@inputs:
+  outputs = { nixpkgs, flake-utils, pre-commit-hooks, self, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -28,22 +29,19 @@
         };
         inherit (pkgs) callPackage;
 
-        # inherit (llvmPackages)stdenv;
-        common = (callPackage ./nix/common {} );
-        package =  pkg: callPackage { inherit common ; };
-        
-      in with pkgs; {
+        common = callPackage ./nix/common { };
+        package = pkg: callPackage { inherit common; };
+        chk = package ./nix/checks { };
 
-        devShells =  package ./nix/shells {};
-        checks =  package ./nix/checks {};
+      in {
+        checks = package ./nix/checks { };
+        formatter = pkgs.nixfmt;
 
-        formatter = pkgs.alejandra;
+        devShells = package ./nix/shells { };
 
-        packages.cpp-tools = pkgs.buildEnv {          
+        packages.cpp-tools = pkgs.buildEnv {
           name = "cpp-tools";
-          
-          paths = buildInputs;
+          paths = common.buildInputs;
         };
-
       });
 }

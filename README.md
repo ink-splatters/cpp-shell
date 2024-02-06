@@ -39,13 +39,14 @@ there are 3 more shell types:
 - `#O3-unhardened` ( self explanatory )
 
 all the shells feature:
+
 - `-mcpu=apple-m1` if applicable
 - LDFLAGS=`-fused-ld=lld`
-
 
 ### Examples
 
 #### Enter O3 shell
+
 ```shell
 nix develop github:ink-splatters/cpp-shell#O3
 ```
@@ -67,7 +68,7 @@ optionally, the following  tools can be installed `nix profile` - wise:
 
 to install it:
 
-```
+```shell
 nix profile install github:ink-splatters/cpp-shell#cpp-tools
 ```
 
@@ -77,4 +78,3 @@ More advanced `nix`-based alternatives which support wider range of tools and op
 
 [devshell](https://github.com/numtide/devshell)
 [devenv](http://devenv.sh)
-

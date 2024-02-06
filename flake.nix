@@ -20,28 +20,31 @@
       "cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM=";
   };
 
-  outputs = { nixpkgs, flake-utils, pre-commit-hooks, self, ... }@inputs:
+  outputs = { nixpkgs, flake-utils, pre-commit-hooks, self, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
           # config.allowUnsupportedSystem = true;
         };
+
         inherit (pkgs) callPackage;
 
-        common = callPackage ./nix/common { };
-        package = pkg: callPackage { inherit common; };
-        chk = package ./nix/checks { };
-
+        common = callPackage ./nix/common.nix { inherit system; };
       in {
-        checks = package ./nix/checks { };
+
+        checks = import ./nix/checks.nix {
+          inherit pkgs pre-commit-hooks system common;
+        };
+
         formatter = pkgs.nixfmt;
 
-        devShells = package ./nix/shells { };
+        devShells =
+          import ./nix/shells.nix { inherit pkgs common self system; };
 
-        packages.cpp-tools = pkgs.buildEnv {
-          name = "cpp-tools";
-          paths = common.buildInputs;
-        };
+        # packages.cpp-tools = pkgs.buildEnv {
+        #   name = "cpp-tools";
+        #   paths = common.buildInputs;
+        # };
       });
 }

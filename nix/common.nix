@@ -1,17 +1,24 @@
-{ llvmPackages, lib, system, ... }@pkgs:
-let inherit (llvmPackages) lld xcodebuild clang-tools lldb;
-in with pkgs; {
-  flags = rec {
-    CFLAGS =
-      lib.optionalString ("${system}" == "aarch64-darwin") "-mcpu=apple-m1";
-    CXXFLAGS = "${CFLAGS}";
-    LDFLAGS = "-fuse-ld=lld";
-  };
-  nativeBuildInputs = [ bison ccache cmake conan gnumake flex meson ninja ]
-    ++ [ lldb xcodebuild ];
+{ pkgs, lib, llvmPackages, system, ... }:
+let
 
-  buildInputs = [ clang-tools lldb ];
-  # ++ [
+  inherit (llvmPackages) lldb;
+
+  replaceStdenv = pkg:
+    pkg.overrideAttrs (_: { inherit (llvmPackages) stdenv; });
+
+in rec {
+
+  CFLAGS =
+    lib.optionalString ("${system}" == "aarch64-darwin") "-mcpu=apple-m1";
+  CXXFLAGS = "${CFLAGS}";
+  LDFLAGS = "-fuse-ld=lld";
+
+  nativeBuildInputs = with pkgs;
+    [ bison ccache cmake conan gnumake flex meson ninja ]
+    ++ [ lldb (replaceStdenv pkgs.xcodebuild) ];
+
+  buildInputs = [ (replaceStdenv pkgs.clang-tools) lldb ];
+  # ++ (with pkgs; [
   #   ccls
-  # ]
+  # ]);
 }

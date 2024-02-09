@@ -5,8 +5,6 @@
     dontBuild = true;
     doCheck = true;
 
-    # inherit (common) nativeBuildInputs CFLAGS CXXFLAGS LDFLAGS;
-
     checkPhase = ''
       clang++ main.cpp -o helloworld
     '';

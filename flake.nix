@@ -42,9 +42,10 @@
         devShells =
           import ./nix/shells.nix { inherit pkgs common self system; };
 
-        # packages.cpp-tools = pkgs.buildEnv {
-        #   name = "cpp-tools";
-        #   paths = common.buildInputs;
-        # };
+        packages.cpp-tools = with pkgs;
+          buildEnv {
+            name = "cpp-tools";
+            paths = [ (common.replaceStdenv clang-tools) lldb ];
+          };
       });
 }

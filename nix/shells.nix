@@ -21,6 +21,7 @@ with pkgs; rec {
 
   O3-unhardened = O3 // unhardened;
 
-  install-hooks =
-    mkShell { inherit (self.checks.${system}.pre-commit-check) shellHook; };
+  install-hooks = mkShell.override { stdenv = stdenvNoCC; } {
+    inherit (self.checks.${system}.pre-commit-check) shellHook;
+  };
 }

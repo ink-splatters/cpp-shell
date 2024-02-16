@@ -45,7 +45,7 @@
         packages.cpp-tools = with pkgs;
           buildEnv {
             name = "cpp-tools";
-            paths = [ (common.replaceStdenv clang-tools) lldb ];
+            paths = map common.replaceStdenv [ clang-tools lldb ];
           };
       });
 }

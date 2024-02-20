@@ -1,5 +1,5 @@
-{ pkgs, lib, llvmPackages, system, ... }:
-let inherit (llvmPackages) lldb stdenv;
+{ pkgs, lib, system, ... }:
+let inherit (pkgs.llvmPackages_17) lldb stdenv;
 in rec {
   replaceStdenv = pkg: pkg.overrideAttrs (_: { inherit stdenv; });
 

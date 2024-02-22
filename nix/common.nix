@@ -14,6 +14,6 @@
     meson
     ninja
     lldb_17
-    lld_17
+    llvmPackages_17.bintools # https://matklad.github.io/2022/03/14/rpath-or-why-lld-doesnt-work-on-nixos.html
   ];
 }

@@ -49,7 +49,7 @@
         packages.cpp-tools = with pkgs;
           buildEnv {
             name = "cpp-tools";
-            paths = [ clang-tools_17 lldb_17 ];
+            paths = [ clang-tools_17 lldb_17 llvmPackages_17.bintools ];
           };
       });
 }

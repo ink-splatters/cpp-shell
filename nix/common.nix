@@ -14,5 +14,6 @@
     meson
     ninja
     lldb_17
+    lld_17
   ];
 }

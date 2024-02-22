@@ -1,17 +1,25 @@
-{ pkgs, pre-commit-hooks, system, ... }@common: {
-  default = pkgs.stdenv.mkDerivation {
+{ pkgs, pre-commit-hooks, system, common, ... }: {
+  default = pkgs.llvmPackages_17.stdenv.mkDerivation rec {
+
+    inherit (common) CFLAGS CXXFLAGS LDFLAGS;
+
     name = "check";
+
     src = ../checks;
-    dontBuild = true;
+
+    # dontBuild = true;
     doCheck = true;
 
-    checkPhase = ''
+    buildPhase = ''
       clang++ main.cpp -o helloworld
+    '';
+    checkPhase = ''
+      ./helloworld
     '';
     installPhase = ''
       mkdir "$out"
     '';
-  } // common;
+  };
 
   pre-commit-check = pre-commit-hooks.lib.${system}.run {
     src = ../.;

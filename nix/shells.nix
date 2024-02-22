@@ -1,7 +1,9 @@
 { pkgs, common, self, system, ... }:
 with pkgs; rec {
 
-  default = mkShell.override { inherit (llvmPackages) stdenv; } {
+  default = mkShell.override { inherit (llvmPackages_17) stdenv; } {
+
+    inherit (common) CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs;
 
     name = "cpp-shell";
 
@@ -9,7 +11,7 @@ with pkgs; rec {
       export PS1="\n\[\033[01;36m\]‹⊂˖˖› \\$ \[\033[00m\]"
       echo -e "\nto install pre-commit hooks:\n\x1b[1;37mnix develop .#install-hooks\x1b[00m"
     '';
-  } // common;
+  };
 
   unhardened = { hardeningDisable = [ "all" ]; } // default;
 

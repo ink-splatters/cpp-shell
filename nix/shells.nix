@@ -3,7 +3,7 @@ with pkgs; rec {
 
   default = mkShell.override { inherit (llvmPackages_17) stdenv; } {
 
-    inherit (common) CFLAGS CXXFLAGS LDFLAGS nativeBuildInputs;
+    inherit (common) CFLAGS CXXFLAGS LDFLAGS buildInputs nativeBuildInputs;
 
     name = "cpp-shell";
 
@@ -13,15 +13,16 @@ with pkgs; rec {
     '';
   };
 
-  unhardened = { hardeningDisable = [ "all" ]; } // default;
+  unhardened = default.overrideAttrs (_: { hardeningDisable = [ "all" ]; });
 
-  O3 = let inherit (default) CFLAGS CXXFLAGS;
-  in {
-    CFLAGS = "${CFLAGS} -O3";
-    CXXFLAGS = "${CXXFLAGS} -O3";
-  } // default;
+  O3 = default.overrideAttrs (_:
+    let inherit (common) CFLAGS CXXFLAGS;
+    in {
+      CFLAGS = "${CFLAGS} -O3";
+      CXXFLAGS = "${CXXFLAGS} -O3";
+    });
 
-  O3-unhardened = O3 // unhardened;
+  O3-unhardened = O3.overrideAttrs (_: { hardeningDisable = [ "all" ]; });
 
   install-hooks = mkShell.override { stdenv = stdenvNoCC; } {
     inherit (self.checks.${system}.pre-commit-check) shellHook;

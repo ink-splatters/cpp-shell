@@ -27,29 +27,20 @@
   outputs = { nixpkgs, flake-utils, pre-commit-hooks, self, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-          # config.allowUnsupportedSystem = true;
-        };
+        pkgs = nixpkgs.legacyPackages.${system};
 
         inherit (pkgs) callPackage;
 
         common = callPackage ./nix/common.nix { inherit system; };
       in {
 
-        checks = import ./nix/checks.nix {
-          inherit pkgs pre-commit-hooks system common;
+        checks.pre-commit-check = callPackage ./nix/checks.nix {
+          inherit pkgs pre-commit-hooks system;
         };
 
         formatter = pkgs.nixfmt;
 
         devShells =
           import ./nix/shells.nix { inherit pkgs common self system; };
-
-        packages.cpp-tools = with pkgs;
-          buildEnv {
-            name = "cpp-tools";
-            paths = [ clang-tools_17 lldb_17 llvmPackages_17.bintools ];
-          };
       });
 }

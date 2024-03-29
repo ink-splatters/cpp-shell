@@ -1,4 +1,4 @@
-{ llvmPackages_17, lib, pkgs, system, ... }:
+{ llvmPackages_17, lib, lld_17, pkgs, system, ... }:
 let inherit (llvmPackages_17) bintools libcxx;
 in rec {
   CFLAGS =
@@ -7,5 +7,12 @@ in rec {
   LDFLAGS = "-fuse-ld=lld -lc++ -lc++abi";
 
   buildInputs = [ libcxx bintools ];
-  nativeBuildInputs = with pkgs; [ ccache cmake gnumake ninja pkg-config ];
+  nativeBuildInputs = with pkgs; [
+    ccache
+    cmake
+    gnumake
+    lld_17
+    ninja
+    pkg-config
+  ];
 }

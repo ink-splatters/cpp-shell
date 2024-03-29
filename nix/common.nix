@@ -7,5 +7,5 @@ in rec {
   LDFLAGS = "-fuse-ld=lld -lc++ -lc++abi";
 
   buildInputs = [ libcxx bintools ];
-  nativeBuildInputs = with pkgs; [ ccache cmake gnumake ninja ];
+  nativeBuildInputs = with pkgs; [ ccache cmake gnumake ninja pkg-config ];
 }

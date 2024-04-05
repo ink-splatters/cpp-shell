@@ -8,7 +8,7 @@ pre-commit-hooks.lib.${system}.run {
     deadnix.enable = true;
     markdownlint = {
       enable = true;
-      settings.config = { MD041.level = 2; };
+      settings.configuration = { MD041.level = 2; };
     };
 
     nil.enable = true;

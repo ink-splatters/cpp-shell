@@ -38,7 +38,7 @@
           inherit pkgs pre-commit-hooks system;
         };
 
-        formatter = pkgs.nixfmt-classic;
+        formatter = pkgs.nixfmt;
 
         devShells =
           import ./nix/shells.nix { inherit pkgs common self system; };

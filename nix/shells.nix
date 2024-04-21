@@ -1,7 +1,7 @@
 { pkgs, common, self, system, ... }:
 with pkgs; rec {
 
-  default = mkShell.override { inherit (llvmPackages_17) stdenv; } {
+  default = mkShell.override { inherit (llvmPackages_18) stdenv; } {
 
     inherit (common) CFLAGS CXXFLAGS LDFLAGS buildInputs nativeBuildInputs;
 

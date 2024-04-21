@@ -1,5 +1,5 @@
-{ llvmPackages_17, lib, lld_17, pkgs, system, ... }:
-let inherit (llvmPackages_17) bintools libcxx;
+{ llvmPackages_18, lib, lld_18, pkgs, system, ... }:
+let inherit (llvmPackages_18) bintools libcxx;
 in rec {
   CFLAGS =
     lib.optionalString ("${system}" == "aarch64-darwin") "-mcpu=apple-m1 ";
@@ -11,7 +11,7 @@ in rec {
     ccache
     cmake
     gnumake
-    lld_17
+    lld_18
     ninja
     pkg-config
   ];

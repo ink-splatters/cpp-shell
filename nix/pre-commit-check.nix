@@ -1,4 +1,9 @@
-{ pkgs, pre-commit-hooks, system, ... }:
+{
+  pkgs,
+  pre-commit-hooks,
+  system,
+  ...
+}:
 
 pre-commit-hooks.lib.${system}.run {
   src = ../.;
@@ -8,14 +13,18 @@ pre-commit-hooks.lib.${system}.run {
     deadnix.enable = true;
     markdownlint = {
       enable = true;
-      settings.configuration = { MD041.level = 2; };
+      settings.configuration = {
+        MD041.level = 2;
+      };
     };
 
     nil.enable = true;
-    nixfmt.enable = true;
+    nixfmt = {
+      package = pkgs.nixfmt-rfc-style;
+      enable = true;
+    };
     statix.enable = true;
   };
 
   tools = pkgs;
 }
-

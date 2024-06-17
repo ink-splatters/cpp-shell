@@ -1,11 +1,11 @@
 {
   pkgs,
-  pre-commit-hooks,
+  git-hooks,
   system,
   ...
 }:
 
-pre-commit-hooks.lib.${system}.run {
+git-hooks.lib.${system}.run {
   src = ../.;
   hooks = {
     clang-format.enable = true;

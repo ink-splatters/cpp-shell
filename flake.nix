@@ -5,13 +5,18 @@
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
     systems.url = "github:nix-systems/default";
 
+    gitignore = {
+      url = "github:hercules-ci/gitignore.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
     };
-    pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
       inputs = {
+        gitignore.follows = "gitignore";
         nixpkgs.follows = "nixpkgs";
         nixpkgs-stable.follows = "nixpkgs";
       };
@@ -27,7 +32,7 @@
     {
       nixpkgs,
       flake-utils,
-      pre-commit-hooks,
+      git-hooks,
       self,
       ...
     }:
@@ -42,9 +47,7 @@
       in
       {
 
-        checks.pre-commit-check = callPackage ./nix/pre-commit-check.nix {
-          inherit pkgs pre-commit-hooks system;
-        };
+        checks.pre-commit-check = callPackage ./nix/pre-commit-check.nix { inherit pkgs git-hooks system; };
 
         formatter = pkgs.nixfmt-rfc-style;
 

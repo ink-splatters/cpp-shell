@@ -42,23 +42,14 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         inherit (pkgs) callPackage;
-
-        common = callPackage ./nix/common.nix { inherit system; };
       in
       {
 
-        checks.pre-commit-check = callPackage ./nix/pre-commit-check.nix { inherit pkgs git-hooks system; };
+        checks.pre-commit-check = callPackage ./nix/pre-commit-check.nix { inherit git-hooks system; };
 
         formatter = pkgs.nixfmt-rfc-style;
 
-        devShells = import ./nix/shells.nix {
-          inherit
-            pkgs
-            common
-            self
-            system
-            ;
-        };
+        devShells = callPackage ./nix/shells.nix { inherit (self.checks.${system}) pre-commit-check; };
       }
     );
 }

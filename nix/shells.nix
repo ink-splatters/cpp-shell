@@ -1,64 +1,51 @@
 {
+  callPackage,
+  llvmPackages_18,
+  mkShell,
+  stdenvNoCC,
   pkgs,
-  common,
-  self,
-  system,
+  pre-commit-check,
   ...
 }:
 let
-  preCommitShellHook =
-    let
-      inherit (self.checks.${system}.pre-commit-check) shellHook;
-    in
-    shellHook;
+  compilerFlags = callPackage ./compiler-flags.nix { maxPerf = true; };
 in
-with pkgs;
-rec {
+{
   default = mkShell.override { inherit (llvmPackages_18) stdenv; } {
+    name = "cpp-shell";
 
-    inherit (common)
+    inherit (compilerFlags)
       CFLAGS
       CXXFLAGS
       LDFLAGS
-      buildInputs
-      nativeBuildInputs
+      hardeningDisable
       ;
 
-    name = "cpp-shell";
+    nativeBuildInputs = with pkgs; [
+      ccache
+      cmake
+      gnumake
+      lld_18
+      ninja
+      pkg-config
+    ];
 
     shellHook =
-      preCommitShellHook
+      pre-commit-check.shellHook
       + ''
         export PS1="\n\[\033[01;36m\]‹⊂˖˖› \\$ \[\033[00m\]"
         echo -e "\nto install pre-commit hooks:\n\x1b[1;37mnix develop .#install-hooks\x1b[00m"
       '';
   };
-
-  unhardened = default.overrideAttrs (_: {
-    hardeningDisable = [ "all" ];
-  });
-
-  O3 = default.overrideAttrs (
-    _:
-    let
-      inherit (common) CFLAGS CXXFLAGS;
-    in
-    {
-      CFLAGS = "${CFLAGS} -O3";
-      CXXFLAGS = "${CXXFLAGS} -O3";
-    }
-  );
-
-  O3-unhardened = O3.overrideAttrs (_: {
-    hardeningDisable = [ "all" ];
-  });
-
   install-hooks = mkShell.override { stdenv = stdenvNoCC; } {
-    inherit system;
-    shellHook = ''
-      ${preCommitShellHook}
-      echo Done!
-      exit
-    '';
+    shellHook =
+      let
+        inherit (pre-commit-check) shellHook;
+      in
+      ''
+        ${shellHook}
+        echo Done!
+        exit
+      '';
   };
 }

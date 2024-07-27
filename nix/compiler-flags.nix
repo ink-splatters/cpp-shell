@@ -1,3 +1,36 @@
+# with import <nixpkgs> {};
+# let
+#   compilerFlags = callPackage ./compiler-flags.nix { maxPerf = true; };
+
+#   inherit (llvmPackages_18) stdenv clang-unwrapped lld libcxx;
+# in
+# mkShell.override { inherit  stdenv; } {
+#     name = "cpp-shell";
+
+#     inherit (compilerFlags)
+#       CFLAGS
+#       CXXFLAGS
+#       LDFLAGS
+#       hardeningDisable
+#       ;
+
+#     nativeBuildInputs = with pkgs; [
+#       cmake
+#       pkg-config
+#       ninja
+#       clang-unwrapped
+#       lld
+#       libcxx
+#     ];
+
+#     shellHook = ''
+#       export CC=${clang-unwrapped}/bin/clang
+#       export CXX=${clang-unwrapped}/bin/clang++
+#       export LD=${lld}/bin/ld.lld
+#       export LDFLAGS="-L${libcxx}/lib $LDFLAGS"
+#       export CXXFLAGS="-I${libcxx}/include $CXXFLAGS"
+#     '';
+# }
 {
   pkgs,
   llvmPackages_18,
